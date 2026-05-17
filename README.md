@@ -10,7 +10,7 @@
 
 <br/>
 
-**🌐 زبان:** [🇮🇷 فارسی](README.md) • [🇬🇧 English](README_EN.md)
+**🌐 زبان:** [🇮🇷 فارسی](README.md) • [🇬🇧 English](README_EN.md) • [🇨🇳 中文](README_ZH.md)
 
 <br/>
 
@@ -33,7 +33,7 @@
 </div>
 
 ```bash
-bash <(curl -fsSL https://raw.githubusercontent.com/avacocloud/XHTTP-Installer/main/install.sh)
+bash <(curl -fsSL https://raw.githubusercontent.com/ZhengYuHangOvO/XHTTP-Installer/main/install.sh)
 ```
 
 <div align="center">
@@ -315,7 +315,7 @@ https://app.netlify.com/user/applications#personal-access-tokens
 SSH بزن به سرور و این یه خط رو اجرا کن:
 
 ```bash
-bash <(curl -fsSL https://github.com/avacocloud/XHTTP-Installer/releases/latest/download/Deploy-Ubuntu.sh)
+bash <(curl -fsSL https://github.com/ZhengYuHangOvO/XHTTP-Installer/releases/latest/download/Deploy-Ubuntu.sh)
 ```
 
 > [!TIP]
@@ -328,7 +328,7 @@ bash <(curl -fsSL https://github.com/avacocloud/XHTTP-Installer/releases/latest/
 
 **با git (دستی):**
 ```bash
-git clone https://github.com/avacocloud/XHTTP-Installer.git /root/XHTTP-Installer
+git clone https://github.com/ZhengYuHangOvO/XHTTP-Installer.git /root/XHTTP-Installer
 cd /root/XHTTP-Installer
 sudo bash Deploy-Ubuntu.sh
 ```
@@ -588,7 +588,7 @@ tail -f /tmp/xhttp-install.log
 > 
 > ❗ ولی **هر کپی، fork یا توزیع مجدد** باید موارد زیر رو نگه داره:
 > - 📌 نوتیس کپی‌رایت اصلی (`Copyright © 2025 avaco_cloud`)
-> - 📌 لینک به ریپو اصلی: https://github.com/avacocloud/XHTTP-Installer
+> - 📌 لینک به ریپو اصلی: https://github.com/ZhengYuHangOvO/XHTTP-Installer
 > - 📌 اشاره به [@avaco_cloud](https://t.me/avaco_cloud) به‌عنوان نویسنده اصلی
 > - 📌 فایل `LICENSE` بدون تغییر
 > 

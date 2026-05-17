@@ -5,7 +5,7 @@
   "private": true,
   "license": "GPL-3.0",
   "author": "avaco_cloud",
-  "homepage": "https://github.com/avacocloud/XHTTP-Installer",
+  "homepage": "https://github.com/ZhengYuHangOvO/XHTTP-Installer",
   "scripts": {
     "dev": "netlify dev",
     "build": "echo 'No build step required'"
@@ -13,5 +13,5 @@
   "devDependencies": {
     "netlify-cli": "latest"
   },
-  "buildId": "avc-7f3a92e1-2025-avacocloud"
+  "buildId": "avc-7f3a92e1-2025-ZhengYuHangOvO"
 }
