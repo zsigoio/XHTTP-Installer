@@ -4,7 +4,7 @@
 #  Ubuntu Server | VLESS+XHTTP Auto-Installer
 # -------------------------------------------------------------
 #  Copyright (C) 2025 avaco_cloud
-#  Repository: https://github.com/avacocloud/XHTTP-Installer
+#  Repository: https://github.com/ZhengYuHangOvO/XHTTP-Installer
 #  Author:     @avaco_cloud (https://t.me/avaco_cloud)
 #
 #  Licensed under the GNU General Public License v3.0 (GPL-3.0).
@@ -17,7 +17,7 @@
 set -euo pipefail
 
 # Build identifier — do not remove (used for integrity verification)
-readonly AVC_BUILD_ID="avc-7f3a92e1-2025-avacocloud"
+readonly AVC_BUILD_ID="avc-7f3a92e1-2025-ZhengYuHangOvO"
 export AVC_BUILD_ID
 
 LOG_FILE="/tmp/xhttp-install.log"
@@ -42,7 +42,7 @@ drain_process_substitution_source() {
 # Auto-download the full repo into /opt/xhttp-installer and re-exec from there.
 if [[ -z "$SCRIPT_DIR" || ! -d "${SCRIPT_DIR}/deploy" ]]; then
   REPO_DIR="/opt/xhttp-installer"
-  REPO_URL="https://github.com/avacocloud/XHTTP-Installer.git"
+  REPO_URL="https://github.com/ZhengYuHangOvO/XHTTP-Installer.git"
   echo ">> Detected remote-piped run — fetching full repo to ${REPO_DIR}..."
   if [[ ! -d "$REPO_DIR/.git" ]]; then
     if command -v git >/dev/null 2>&1; then
@@ -349,22 +349,42 @@ phase1_preflight() {
     ok "Node.js $(node -v) already present"
   fi
 
-  # ── Ensure swap for low-RAM VPS (npm install -g netlify-cli OOMs on <2GB without swap)
-  local total_mem_mb swap_mb
+  # ── Optional swap for low-RAM VPS (prompt user for size, skip with 0)
+  local total_mem_mb swap_mb avail_disk_mb
   total_mem_mb=$(awk '/MemTotal/ {print int($2/1024)}' /proc/meminfo 2>/dev/null || echo 0)
   swap_mb=$(awk '/SwapTotal/ {print int($2/1024)}' /proc/meminfo 2>/dev/null || echo 0)
+  avail_disk_mb=$(df -m / 2>/dev/null | awk 'NR==2 {print int($4)}' || echo 0)
   if (( total_mem_mb < 2048 && swap_mb < 1024 )); then
-    info "Low RAM detected (${total_mem_mb} MB, swap ${swap_mb} MB) — adding 2 GB swap to prevent OOM..."
-    if [[ ! -f /swapfile ]]; then
-      fallocate -l 2G /swapfile 2>/dev/null || dd if=/dev/zero of=/swapfile bs=1M count=2048 2>/dev/null
-      chmod 600 /swapfile 2>/dev/null
-      mkswap /swapfile >/dev/null 2>&1
-      swapon /swapfile 2>/dev/null
-      grep -q "/swapfile" /etc/fstab 2>/dev/null || echo "/swapfile none swap sw 0 0" >> /etc/fstab
-      ok "2 GB swap added at /swapfile"
+    info "Low RAM detected (${total_mem_mb} MB, swap ${swap_mb} MB, disk free ${avail_disk_mb} MB)"
+    local max_swap_mb=$(( avail_disk_mb / 2 ))
+    (( max_swap_mb > 1024 )) && max_swap_mb=1024
+    if (( max_swap_mb < 128 )); then
+      warn "Available disk space too low (~${avail_disk_mb} MB free) — skipping swap creation"
     else
-      swapon /swapfile 2>/dev/null || true
-      ok "Existing /swapfile activated"
+      local swap_prompt swap_size_mb
+      swap_prompt="Swap size in MB (0 to skip, default ${max_swap_mb})"
+      read -rp "$(echo -e "  ${C_WHITE}${swap_prompt}${C_RESET}: ")" swap_size_mb
+      [[ -z "$swap_size_mb" ]] && swap_size_mb=$max_swap_mb
+      if (( swap_size_mb > 0 )); then
+        if (( swap_size_mb > avail_disk_mb - 128 )); then
+          warn "Requested ${swap_size_mb}MB exceeds available space — capping at ${max_swap_mb}MB"
+          swap_size_mb=$max_swap_mb
+        fi
+        if [[ ! -f /swapfile ]]; then
+          info "Creating ${swap_size_mb}MB swapfile..."
+          fallocate -l "${swap_size_mb}M" /swapfile 2>/dev/null || dd if=/dev/zero of=/swapfile bs=1M count="$swap_size_mb" 2>/dev/null
+          chmod 600 /swapfile 2>/dev/null
+          mkswap /swapfile >/dev/null 2>&1
+          swapon /swapfile 2>/dev/null
+          grep -q "/swapfile" /etc/fstab 2>/dev/null || echo "/swapfile none swap sw 0 0" >> /etc/fstab
+          ok "${swap_size_mb} MB swap added at /swapfile"
+        else
+          swapon /swapfile 2>/dev/null || true
+          ok "Existing /swapfile activated"
+        fi
+      else
+        info "Swap creation skipped by user"
+      fi
     fi
   fi
 }
@@ -517,12 +537,16 @@ NPXWRAP
     exit 1
   fi
 
-  # ── 2d. Vercel CLI ──────────────────────────────────────
-  if command -v vercel &>/dev/null; then
-    ok "Vercel CLI already installed ($(vercel --version 2>/dev/null | head -1))"
+  # ── 2d. Vercel CLI (only needed for Vercel platform) ────
+  if [[ "${CFG_PLATFORM:-vercel}" == "vercel" ]]; then
+    if command -v vercel &>/dev/null; then
+      ok "Vercel CLI already installed ($(vercel --version 2>/dev/null | head -1))"
+    else
+      spin "Installing Vercel CLI via npm (~20-40s)" -- \
+        bash -c 'npm install -g vercel --no-audit --no-fund --no-progress --prefer-offline'
+    fi
   else
-    spin "Installing Vercel CLI via npm (~20-40s)" -- \
-      bash -c 'npm install -g vercel --no-audit --no-fund --no-progress --prefer-offline'
+    info "Skipping Vercel CLI (not needed for Netlify)"
   fi
 
   # ── 2d. xray-knife ──────────────────────────────────────
@@ -2864,7 +2888,7 @@ _update_script() {
   else
     echo -e "  ${C_YELLOW}No existing checkout — cloning fresh...${C_RESET}"
     git clone --depth=1 --branch main \
-      "https://github.com/avacocloud/XHTTP-Installer.git" "$TARGET_DIR" 2>&1 | tail -5
+      "https://github.com/ZhengYuHangOvO/XHTTP-Installer.git" "$TARGET_DIR" 2>&1 | tail -5
   fi
 
   echo ""

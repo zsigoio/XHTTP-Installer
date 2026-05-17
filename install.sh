@@ -2,17 +2,17 @@
 # =============================================================
 #  XHTTP Installer — Bootstrap
 #  Copyright (C) 2025 avaco_cloud
-#  Repository: https://github.com/avacocloud/XHTTP-Installer
+#  Repository: https://github.com/ZhengYuHangOvO/XHTTP-Installer
 #  Licensed under GPL-3.0. See LICENSE file.
 # =============================================================
-# Usage: bash <(curl -fsSL https://raw.githubusercontent.com/avacocloud/XHTTP-Installer/main/install.sh)
+# Usage: bash <(curl -fsSL https://raw.githubusercontent.com/ZhengYuHangOvO/XHTTP-Installer/main/install.sh)
 
 set -euo pipefail
 
-readonly AVC_BUILD_ID="avc-7f3a92e1-2025-avacocloud"
+readonly AVC_BUILD_ID="avc-7f3a92e1-2025-ZhengYuHangOvO"
 export AVC_BUILD_ID
 
-REPO_URL="https://github.com/avacocloud/XHTTP-Installer.git"
+REPO_URL="https://github.com/ZhengYuHangOvO/XHTTP-Installer.git"
 TARGET_DIR="/root/XHTTP-Installer"
 BRANCH="main"
 
