@@ -6,11 +6,11 @@
 
 <br/>
 
-### 🌐 نصب خودکار پروکسی با Relay روی Vercel یا Netlify
+### 🌐 自动化 VLESS + XHTTP + TLS 代理 — 使用 Vercel/Netlify CDN 转发
 
 <br/>
 
-**🌐 زبان:** [🇮🇷 فارسی](README.md) • [🇬🇧 English](README_EN.md) • [🇨🇳 中文](README_ZH.md)
+**🌐 语言:** [🇮🇷 فارسی](README.md) • [🇬🇧 English](README_EN.md) • [🇨🇳 中文](README_ZH.md)
 
 <br/>
 
@@ -21,14 +21,14 @@
 
 <br/>
 
-[![Vercel](https://img.shields.io/badge/Vercel-Supported-000000?style=flat-square&logo=vercel)](#)
-[![Netlify](https://img.shields.io/badge/Netlify-Supported-00C7B7?style=flat-square&logo=netlify)](#)
+[![Vercel](https://img.shields.io/badge/Vercel-支持-000000?style=flat-square&logo=vercel)](#)
+[![Netlify](https://img.shields.io/badge/Netlify-支持-00C7B7?style=flat-square&logo=netlify)](#)
 [![Xray](https://img.shields.io/badge/Xray--core-VLESS%2BXHTTP-purple?style=flat-square)](#)
 [![SSL](https://img.shields.io/badge/SSL-Let's%20Encrypt-003A70?style=flat-square&logo=letsencrypt)](#)
 
 <br/>
 
-### ⚡ نصب سریع با یک دستور
+### ⚡ 一键安装
 
 </div>
 
@@ -42,54 +42,41 @@ bash <(curl -fsSL https://raw.githubusercontent.com/ZhengYuHangOvO/XHTTP-Install
 
 </div>
 
-## 📑 فهرست مطالب
+## ✨ 这是什么？
 
-- [✨ این پروژه چیه؟](#-این-پروژه-چیه)
-- [🔄 چطور کار می‌کنه؟](#-چطور-کار-میکنه)
-- [📋 پیش‌نیازها](#-پیشنیازها)
-- [🚀 نصب در ۴ مرحله](#-نصب-در-۴-مرحله)
-- [📱 استفاده از کانفیگ](#-استفاده-از-کانفیگ)
-- [🛠️ ویژگی‌های اسکریپت](#️-ویژگیهای-اسکریپت)
-- [🐛 عیب‌یابی](#-عیبیابی)
-- [📜 مجوز](#-مجوز)
-
-<br>
-
----
-
-## ✨ این پروژه چیه؟
-
-یه اسکریپت **یک‌خطی** برای راه‌اندازی پروکسی **VLESS+XHTTP+TLS** با استفاده از **CDN رایگان Vercel یا Netlify** به‌عنوان relay.
+一个 **一行命令** 的安装器，用于在 Ubuntu 上搭建 **VLESS + XHTTP + TLS** 代理，使用免费的 **Vercel** 或 **Netlify** CDN 作为转发层。
 
 > [!TIP]
-> **به‌جای** اینکه کلاینت مستقیم به سرور تو وصل شه (که IP لو میره و فیلتر میشه)، ترافیک از Edge Function یه پلتفرم معروف عبور می‌کنه — پس IP سرورت مخفی میمونه.
+> 客户端不直接连接你的服务器（避免暴露 IP），流量通过知名 CDN 平台的边缘函数转发——你的真实服务器 IP 保持隐藏。
 
-<br>
+<br/>
 
-### 🎯 مزایا
+### 🎯 为什么选择这个安装器？
 
-| ویژگی | توضیح |
-|--------|--------|
-| 🛡️ **مخفی‌سازی IP** | IP سرور پشت CDN معتبر مخفی میشه |
-| 🌍 **سرعت بالا** | ترافیک از CDN جهانی Netlify/Vercel |
-| 💰 **رایگان** | با plan رایگان Vercel یا Netlify |
-| 🔐 **TLS معتبر** | گواهی Let's Encrypt خودکار |
-| ⚡ **یک خط نصب** | بدون تجربه یا نیاز به تنظیمات دستی |
-| 🔁 **AutoFix هوشمند** | اگه چیزی خراب شد، خودکار درست می‌کنه |
+| 特性 | 说明 |
+|---------|-------------|
+| 🌐 **无需网络域名** | 只需一个简单的子域名和 A 记录 |
+| 🛠️ **零 CLI 麻烦** | 自动安装和认证 Vercel CLI 和 Netlify CLI |
+| 🐛 **智能自动修复** | 检测并解决 SSL、防火墙、令牌和环境变量问题 |
+| ✅ **端到端验证** | 使用 `xray-knife` 验证生成的配置是否可用 |
+| 🔄 **失败自动重试** | 在修复问题后重新尝试部署/SSL |
+| 🛡️ **隐藏服务器 IP** | 只有 CDN 边缘暴露在公网 |
+| 🔐 **自动 SSL** | 通过 acme.sh 自动获取 Let's Encrypt 证书 |
+| 🇨🇳 **国内友好** | 安装过程无需 VPN |
 
-<br>
+<br/>
 
 ---
 
-## 🔄 چطور کار می‌کنه؟
+## 🔄 工作原理
 
-### معماری کلی
+### 架构
 
 ```mermaid
 flowchart LR
-    A["📱 Client<br/>v2rayN · Nekoray · Hiddify"] -->|"VLESS + XHTTP + TLS"| B
-    B["🌐 CDN Edge<br/>Vercel / Netlify<br/><i>relay.js</i>"] -->|"HTTPS proxy<br/>TARGET_DOMAIN"| C
-    C["🔐 Xray Server<br/>VLESS+XHTTP<br/>Port 443"] -->|"forward"| D["🌍 Internet"]
+    A["📱 客户端<br/>v2rayN · Nekoray · Hiddify"] -->|"VLESS + XHTTP + TLS"| B
+    B["🌐 CDN 边缘<br/>Vercel / Netlify<br/><i>relay.js</i>"] -->|"HTTPS 代理<br/>TARGET_DOMAIN"| C
+    C["🔐 Xray 服务器<br/>VLESS+XHTTP<br/>端口 443"] -->|"转发"| D["🌍 互联网"]
 
     style A fill:#1e293b,stroke:#06b6d4,stroke-width:2px,color:#fff
     style B fill:#0f172a,stroke:#fbbf24,stroke-width:2px,color:#fff
@@ -98,27 +85,27 @@ flowchart LR
 ```
 
 > [!NOTE]
-> **CDN لایه‌ی عمومی** و **سرور Xray لایه‌ی مخفی** هست. دنیای بیرون فقط دامنه‌ی CDN رو می‌بینه.
+> **CDN 是公开层**，你的 **Xray 服务器是隐藏的**。外界只能看到 CDN 域名。
 
-<br>
+<br/>
 
-### فازهای اسکریپت
+### 自动化阶段
 
 ```mermaid
 flowchart TD
-    Start([🚀 Start]) --> P1
-    P1["1️⃣ Preflight<br/>OS · Root · DNS · Ports"] --> P2
-    P2["2️⃣ Install Tools<br/>Xray · acme.sh · CLIs · xray-knife"] --> P3
-    P3["3️⃣ Collect Inputs<br/>Platform · Domain · Token"] --> P4A
-    P4A["4️⃣ Issue SSL<br/>Let's Encrypt via acme.sh"] --> P4B
-    P4B["5️⃣ Configure Xray<br/>VLESS + XHTTP + TLS"] --> P4C
-    P4C{Platform?}
-    P4C -->|Vercel| V["🔵 Vercel Deploy<br/>vercel env + deploy"]
-    P4C -->|Netlify| N["🟢 Netlify Deploy<br/>netlify env + deploy"]
+    Start([🚀 开始]) --> P1
+    P1["1️⃣ 预检<br/>系统 · 根权限 · DNS · 端口"] --> P2
+    P2["2️⃣ 安装工具<br/>Xray · acme.sh · CLI · xray-knife"] --> P3
+    P3["3️⃣ 收集输入<br/>平台 · 域名 · Token"] --> P4A
+    P4A["4️⃣ 签发 SSL<br/>Let's Encrypt via acme.sh"] --> P4B
+    P4B["5️⃣ 配置 Xray<br/>VLESS + XHTTP + TLS"] --> P4C
+    P4C{选择平台?}
+    P4C -->|Vercel| V["🔵 Vercel 部署<br/>vercel env + deploy"]
+    P4C -->|Netlify| N["🟢 Netlify 部署<br/>netlify env + deploy"]
     V --> P5
     N --> P5
-    P5["7️⃣ E2E Test<br/>xray-knife + ping"] --> P6
-    P6["8️⃣ Generate Config<br/>vless:// link"] --> Done([✅ Done])
+    P5["7️⃣ 端到端测试<br/>xray-knife + ping"] --> P6
+    P6["8️⃣ 生成配置<br/>vless:// 链接"] --> Done([✅ 完成])
 
     style Start fill:#00d97e,stroke:#0a1a1f,stroke-width:2px,color:#0a1a1f
     style Done fill:#00d97e,stroke:#0a1a1f,stroke-width:2px,color:#0a1a1f
@@ -137,486 +124,419 @@ flowchart TD
 <br/>
 
 <details open>
-<summary><b>1️⃣ Phase 1 — Preflight (بررسی سیستم)</b></summary>
+<summary><b>1️⃣ 第一阶段 — 预检</b></summary>
 
 <br/>
 
-چک می‌کنه که سرور برای نصب آماده باشه:
-- ✅ سیستم‌عامل Ubuntu 20.04+ هست
-- ✅ اسکریپت با دسترسی **root** اجرا شده
-- ✅ اتصال اینترنت برقراره
-- ✅ پورت‌های 80 و 443 آزادن (اگه نبود، auto-fix می‌کنه)
-- ✅ DNS روی دامنه درست تنظیم شده
+检查服务器是否就绪：
+- ✅ 操作系统是 Ubuntu 20.04+
+- ✅ 以 **root** 身份运行
+- ✅ 网络连接正常
+- ✅ 端口 80 和 443 可用（如被占用自动修复）
+- ✅ DNS 正确指向
 
 </details>
 
 <details>
-<summary><b>2️⃣ Phase 2 — نصب ابزارها</b></summary>
+<summary><b>2️⃣ 第二阶段 — 安装工具</b></summary>
 
 <br/>
 
-این پکیج‌ها رو **خودکار** نصب می‌کنه:
+自动安装所有工具：
 
-| ابزار | کاربرد |
-|-------|--------|
-| **Xray-core** | هسته پروکسی (VLESS+XHTTP) |
-| **acme.sh** | دریافت گواهی SSL از Let's Encrypt |
-| **Node.js + npm** | پیش‌نیاز CLI پلتفرم‌ها |
-| **Vercel CLI** | دیپلوی روی Vercel (اگه انتخاب شده) |
-| **Netlify CLI** | دیپلوی روی Netlify (اگه انتخاب شده) |
-| **xray-knife** | تست end-to-end کانفیگ |
-| **curl, jq, unzip, screen** | ابزارهای کمکی |
+| 工具 | 用途 |
+|------|---------|
+| **Xray-core** | 代理核心（VLESS+XHTTP） |
+| **acme.sh** | Let's Encrypt SSL 证书 |
+| **Node.js + npm** | 平台 CLI 所需 |
+| **Vercel CLI** | 如果你选择 Vercel |
+| **Netlify CLI** | 如果你选择 Netlify |
+| **xray-knife** | 端到端配置验证工具 |
+| **curl, jq, unzip, screen** | 实用工具 |
 
 > [!NOTE]
-> نیازی نیست CLI رو خودت نصب کنی — اسکریپت همه چی رو می‌گیره و auth می‌کنه.
+> 无需预先安装任何 CLI——脚本会处理安装和认证。
 
 </details>
 
 <details>
-<summary><b>3️⃣ Phase 3 — دریافت اطلاعات</b></summary>
+<summary><b>3️⃣ 第三阶段 — 收集输入</b></summary>
 
 <br/>
 
-به‌صورت **تعاملی** این سؤالا رو می‌پرسه:
+交互式询问以下信息：
 
-| سؤال | مثال | اجباری؟ |
-|------|------|---------|
-| انتخاب پلتفرم | Vercel / Netlify | ✅ |
-| دامنه | `ns.example.com` | ✅ |
-| ایمیل SSL | `admin@example.com` | ⬜ (پیش‌فرض) |
-| پورت Xray | `443` | ⬜ (پیش‌فرض) |
-| مسیر relay | `/api` | ⬜ (پیش‌فرض) |
-| **توکن پلتفرم** | Vercel/Netlify token | ✅ |
-| اسم پروژه | `relay-abc123` | ⬜ (رندوم) |
+| 问题 | 示例 | 是否必填 |
+|----------|---------|-----------|
+| 平台 | Vercel / Netlify | ✅ |
+| 域名 | `ns.example.com` | ✅ |
+| SSL 邮箱 | `admin@example.com` | ⬜（默认） |
+| Xray 端口 | `443` | ⬜（默认） |
+| 转发路径 | `/api` | ⬜（默认） |
+| **平台 Token** | Vercel/Netlify token | ✅ |
+| 项目名称 | `relay-abc123` | ⬜（随机） |
 
 </details>
 
 <details>
-<summary><b>4️⃣ Phase 4a — صدور گواهی SSL</b></summary>
+<summary><b>4️⃣ 第四阶段 a — 签发 SSL 证书</b></summary>
 
 <br/>
 
-- 🔐 با `acme.sh` گواهی از **Let's Encrypt** می‌گیره
-- 📁 توی `/etc/ssl/xhttp/<domain>/` ذخیره می‌کنه
-- 🔄 اگه پورت 80 اشغال باشه، auto-fix انجام میده
-- ♻️ تمدید خودکار رو هم فعال می‌کنه
+- 🔐 通过 `acme.sh` 从 **Let's Encrypt** 获取证书
+- 📁 存储在 `/etc/ssl/xhttp/<域名>/`
+- 🔄 如果端口 80 被占用自动修复
+- ♻️ 启用自动续期
 
 </details>
 
 <details>
-<summary><b>5️⃣ Phase 4b — کانفیگ Xray</b></summary>
+<summary><b>5️⃣ 第四阶段 b — 配置 Xray</b></summary>
 
 <br/>
 
-- 🎲 یه **UUID یکتا** تولید می‌کنه
-- 📝 فایل `/usr/local/etc/xray/config.json` می‌سازه با VLESS+XHTTP+TLS
-- 🔑 دسترسی فایل‌های SSL رو برای Xray درست می‌کنه
-- 🚀 سرویس Xray رو start/enable می‌کنه
-- ✅ چک می‌کنه سرویس سالم بالا اومده
+- 🎲 生成唯一的 **UUID**
+- 📝 写入 `/usr/local/etc/xray/config.json`（VLESS+XHTTP+TLS）
+- 🔑 修复 Xray 的 SSL 文件权限
+- 🚀 启动并启用 Xray 服务
+- ✅ 验证服务运行正常
 
 </details>
 
 <details>
-<summary><b>6️⃣ Phase 4c — دیپلوی روی CDN</b></summary>
+<summary><b>6️⃣ 第四阶段 c — 部署到 CDN</b></summary>
 
 <br/>
 
-بسته به پلتفرم انتخابی:
+根据所选平台执行：
 
-**🔵 Vercel:**
-- ورود با توکن → `vercel login`
-- ایجاد پروژه → `vercel project add`
-- ست کردن ENV: `TARGET_DOMAIN`, `UPSTREAM_PROTOCOL`, `RELAY_PATH`
-- دیپلوی production → `vercel deploy --prod`
+**🔵 Vercel：**
+- 使用 Token 登录 → `vercel login`
+- 创建项目 → `vercel project add`
+- 设置环境变量：`TARGET_DOMAIN`、`UPSTREAM_PROTOCOL`、`RELAY_PATH`
+- 部署到生产环境 → `vercel deploy --prod`
 
-**🟢 Netlify:**
-- ورود با توکن → `netlify login`
-- ایجاد site → `netlify sites:create`
-- ست کردن ENV: `TARGET_DOMAIN`
-- دیپلوی با Edge Function → `netlify deploy --prod`
+**🟢 Netlify：**
+- 使用 Token 登录 → `netlify login`
+- 创建站点 → `netlify sites:create`
+- 设置环境变量：`TARGET_DOMAIN`
+- 部署边缘函数 → `netlify deploy --prod`
 
 > [!TIP]
-> اگه دیپلوی شکست خورد، auto-fix خودکار retry می‌کنه با حل کردن مشکل قبلی (ENV، اسم duplicate، توکن).
+> 如果部署失败，自动修复会在解决之前的问题（环境变量、名称冲突、Token）后重试。
 
 </details>
 
 <details>
-<summary><b>7️⃣ Phase 5 — تست end-to-end</b></summary>
+<summary><b>7️⃣ 第五阶段 — 端到端测试</b></summary>
 
 <br/>
 
-- 🧪 با `xray-knife` یه کلاینت موقت می‌سازه
-- 🌐 از طریق CDN → Server → Internet ترافیک رو تست می‌کنه
-- ⏱️ پینگ (min/avg/max) رو اندازه می‌گیره
-- ✅ مطمئن میشه کانفیگ **واقعاً کار می‌کنه** قبل از اینکه بهت بده
+- 🧪 使用 `xray-knife` 创建临时 xray 客户端
+- 🌐 路由真实流量：CDN → 服务器 → 互联网
+- ⏱️ 测量延迟（最小/平均/最大）
+- ✅ 在你使用之前确认配置 **实际可用**
 
 </details>
 
 <details>
-<summary><b>8️⃣ Phase 6 — تولید کانفیگ نهایی</b></summary>
+<summary><b>8️⃣ 第六阶段 — 生成最终配置</b></summary>
 
 <br/>
 
-- 📋 لینک `vless://...` آماده برای کپی
-- 📊 گزارش کامل: URL relay، UUID، نتیجه تست، پینگ، کیفیت
-- 💾 لاگ کامل توی `/tmp/xhttp-install.log`
+- 📋 `vless://...` 链接，可直接复制使用
+- 📊 完整报告：转发 URL、UUID、测试结果、延迟、质量
+- 💾 完整日志：`/tmp/xhttp-install.log`
 
 </details>
 
-<br>
+<br/>
 
 ---
 
-## 📋 پیش‌نیازها
+## 📋 系统要求
 
-قبل از نصب این موارد رو آماده داشته باش:
+### 1. Ubuntu 服务器
 
-### ۱. سرور Ubuntu
-
-- **سیستم‌عامل**: Ubuntu 20.04 یا بالاتر (22.04 پیشنهاد می‌شه)
-- **دسترسی**: root یا sudo
-- **پورت‌ها**: 80 (برای SSL) و 443 (برای relay)
-- **حداقل منابع**: 1 vCPU + 1GB RAM
+- **操作系统**：Ubuntu 20.04+（推荐 22.04）
+- **访问权限**：root 或 sudo
+- **端口**：80（用于 SSL）和 443（用于转发）
+- **最低配置**：1 vCPU + 1 GB 内存
 
 > [!IMPORTANT]
-> قبل از اجرا، از پورت 80 و 443 **صرفاً برای این اسکریپت** استفاده کن. اگه nginx/apache روی این پورت‌ها داری، اول خاموششون کن.
+> 确保端口 80 和 443 未被占用。如果 nginx/apache 正在使用它们，请先停止这些服务。
 
-### ۲. دامنه با DNS
+### 2. 域名和 DNS
 
-یه دامنه که رکورد A اون به **IP سرور** اشاره کنه:
+一个指向你 **服务器 IP** 的子域名 A 记录：
 ```
-ns.example.com  →  YOUR_SERVER_IP
+ns.example.com  →  你的_服务器_IP
 ```
 
-### ۳. توکن CDN (یکی از این دو)
+### 3. CDN Token（二选一）
 
-#### 🔵 توکن Vercel
-
+#### 🔵 Vercel Token
 ```
 https://vercel.com/account/tokens
 ```
-→ **Create Token** → اسم بزار → کپی کن
+→ **创建 Token** → 命名 → 复制
 
-#### 🟢 توکن Netlify
-
+#### 🟢 Netlify Token
 ```
 https://app.netlify.com/user/applications#personal-access-tokens
 ```
-→ **New access token** → اسم بزار → کپی کن
-
-<br>
-
----
-
-## 🚀 نصب در ۴ مرحله
-
-### 📥 مرحله ۱ — اجرای اسکریپت با یک دستور
-
-SSH بزن به سرور و این یه خط رو اجرا کن:
-
-```bash
-bash <(curl -fsSL https://github.com/ZhengYuHangOvO/XHTTP-Installer/releases/latest/download/Deploy-Ubuntu.sh)
-```
-
-> [!TIP]
-> این دستور خودش `git` رو نصب می‌کنه، ریپو رو clone می‌کنه توی `/root/XHTTP-Installer` و `Deploy-Ubuntu.sh` رو اجرا می‌کنه.
-
-<details>
-<summary><b>روش‌های جایگزین</b></summary>
+→ **新建访问令牌** → 命名 → 复制
 
 <br/>
 
-**با git (دستی):**
+---
+
+## 🚀 快速开始
+
+### 📥 第一步 — 一键安装
+
+SSH 连接到你的服务器并运行：
+
+```bash
+bash <(curl -fsSL https://raw.githubusercontent.com/ZhengYuHangOvO/XHTTP-Installer/main/install.sh)
+```
+
+> [!TIP]
+> 这会安装 `git`，克隆仓库到 `/root/XHTTP-Installer`，然后自动运行 `Deploy-Ubuntu.sh`。
+
+<details>
+<summary><b>备用方法</b></summary>
+
+<br/>
+
+**手动 git 克隆：**
 ```bash
 git clone https://github.com/ZhengYuHangOvO/XHTTP-Installer.git /root/XHTTP-Installer
 cd /root/XHTTP-Installer
 sudo bash Deploy-Ubuntu.sh
 ```
 
-**با zip (آفلاین):**
+**离线 zip：**
 ```bash
-scp XHTTP-Installer.zip root@SERVER_IP:/root/
-ssh root@SERVER_IP
+scp XHTTP-Installer.zip root@服务器_IP:/root/
+ssh root@服务器_IP
 cd /root && unzip XHTTP-Installer.zip && sudo bash Deploy-Ubuntu.sh
 ```
 
 </details>
 
-اسکریپت اول می‌پرسه که **توی screen** اجرا کنه یا نه:
+脚本首先询问是否在 `screen` 中运行：
 
-- اگه **اینترنتت ناپایداره** یا SSH زیاد قطع میشه → `Y` بزن. اگه وسط نصب SSH قطع شد:
+- 如果你的 **网络不稳定** 或 SSH 经常断开 → 按 `Y`。如果 SSH 在安装中断开：
   ```bash
-  ssh root@SERVER_IP
+  ssh root@服务器_IP
   screen -r xhttp
   ```
-- اگه اینترنتت **پایداره** و قطع نمیشه → `n` بزن و مستقیم ادامه بده
+- 如果连接稳定 → 按 `n` 直接继续
 
 > [!TIP]
-> اگه SSH وسط نصب قطع شد و توی screen بودی، با `screen -r xhttp` برمیگردی به جلسه‌ی قبلی.
+> 如果在 `screen` 中 SSH 断开，重新连接后运行 `screen -r xhttp` 即可恢复。
 
-<br>
-
-### 🎯 مرحله ۲ — انتخاب پلتفرم
+### 🎯 第二步 — 选择平台
 
 ```
-[ Deployment Platform ]
-Choose relay platform:
+[ 部署平台 ]
+选择转发平台：
   1) Vercel
   2) Netlify
-Enter choice [1/2]: 2
+输入选择 [1/2]：
 ```
 
-<br>
+### ⚙️ 第三步 — 提供信息
 
-### ⚙️ مرحله ۳ — وارد کردن اطلاعات
+脚本逐步询问。按 `Enter` 接受默认值：
 
-اسکریپت پشت سر هم سؤال می‌پرسه. هرجا `Enter` بزنی مقدار پیش‌فرض رو قبول می‌کنه:
+| 问题 | 说明 | 示例 / 默认值 |
+|----------|-------------|-------------------|
+| **域名** | 指向服务器 IP 的子域名 | `ns.example.com` |
+| **邮箱** | SSL 证书邮箱（可选） | `admin@ns.example.com` |
+| **入站端口** | Xray 监听端口 | `443` |
+| **RELAY_PATH** | 服务器上的入站路径 | `/api` |
+| **PUBLIC_RELAY_PATH** | CDN 上的转发路径 | `/api` |
+| **Token** | Vercel 或 Netlify token | 粘贴即可 |
+| **项目名称** | CDN 站点名称（默认随机） | `relay-abc123` |
+| **性能设置** | 仅 Vercel（Enter = 默认） | `128`、`50000`…… |
 
-| سؤال | توضیح | مثال / پیش‌فرض |
-|-------|--------|----------------|
-| **دامنه سرور** | ساب‌دامنه‌ای که A record اون به IP سرور اشاره می‌کنه | `ns.example.com` |
-| **ایمیل** | برای ثبت گواهی SSL (اختیاری) | `admin@ns.example.com` |
-| **پورت inbound** | پورتی که Xray روش گوش میده | `443` |
-| **RELAY_PATH** | مسیر inbound روی سرور | `/api` |
-| **PUBLIC_RELAY_PATH** | مسیر relay روی CDN | `/api` |
-| **توکن** | توکن Vercel یا Netlify (بسته به انتخابت) | paste کن |
-| **اسم پروژه** | اسم سایت روی CDN (رندوم پیش‌فرض) | `relay-abc123` |
-| **تنظیمات Performance** | فقط برای Vercel نمایش داده میشه (Enter = پیش‌فرض) | `128`, `50000`, ... |
-
-<br>
-
-### 🎉 مرحله ۴ — منتظر بمون و کانفیگ رو بردار
-
-اسکریپت همه کارها رو خودش می‌کنه. در نهایت یه چیزی شبیه این می‌بینی:
+### 🎉 第四步 — 等待并获取配置
 
 ```
 ╔══════════════════════════════════════════╗
-║       INSTALLATION COMPLETE  ✔         ║
+║       安装完成  ✔                      ║
 ╚══════════════════════════════════════════╝
 
-  Platform         : netlify
-  Relay URL        : https://your-site-name.netlify.app
-  Inbound UUID     : xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx
+  平台             : netlify
+  转发 URL         : https://your-site.netlify.app
   
-  E2E Proxy Test   : ✔ PASS
-  Ping (min/avg/max): 395/424/480 ms
-  Quality          : Good
-                     Your client config IS verified to work.
+  端到端代理测试   : ✔ 通过
+  延迟（最小/平均/最大）: 395/424/480 ms
+  质量             : 良好
 
-── Client Config ──
+── 客户端配置 ──
 
-vless://xxxxxxxx...@your-site-name.netlify.app:443?...#XHTTP-netlify
+vless://xxxxxxxx...@your-site.netlify.app:443?...#XHTTP-netlify
 ```
 
-✅ اون لینک `vless://...` رو **کپی کن**.
-
-<br>
-
----
-
-## 📱 استفاده از کانفیگ
-
-### 🪟 ویندوز — v2rayN
-
-1. v2rayN رو از [اینجا](https://github.com/2dust/v2rayN/releases) دانلود کن
-2. باز کن → `Servers` → `Import bulk URL from clipboard` (یا `Ctrl+V`)
-3. اگه لینک رو کپی کرده باشی، خودکار اضافه می‌شه
-4. روی سرور **راست‌کلیک** → `Set as active server`
-5. Mode رو روی `Global` یا `PAC` بذار
-
-### 🤖 اندروید — v2rayNG
-
-1. v2rayNG رو از [Google Play](https://play.google.com/store/apps/details?id=com.v2ray.ang) نصب کن
-2. روی **+** بزن → `Import config from clipboard`
-3. روی سرور tap کن → روی **V** آبی پایین صفحه بزن
-
-### 🍎 iOS — Streisand
-
-1. Streisand رو از App Store نصب کن
-2. لینک رو کپی کن → Streisand خودش detect می‌کنه
-3. سرور رو فعال کن
-
-### 🐧 لینوکس — Nekoray
-
-1. Nekoray رو از [اینجا](https://github.com/MatsuriDayo/nekoray/releases) دانلود کن
-2. `Program → Add profile from clipboard`
-3. روی سرور دوبار کلیک کن
-
-### 🌐 همه پلتفرم‌ها — Hiddify
-
-1. Hiddify رو از [hiddify.com](https://hiddify.com) دانلود کن
-2. `Add` → `Add from Clipboard` (لینک رو از قبل کپی کن)
-3. سرور رو فعال کن
-
-<br>
-
----
-
-## 🛠️ ویژگی‌های اسکریپت
-
-### 🤖 AutoFix هوشمند
-
-اگه چیزی خراب بشه، اسکریپت خودش **سعی می‌کنه fix کنه**:
-
-| مشکل | AutoFix |
-|-------|---------|
-| پورت 80 اشغاله | کشتن پروسه و ادامه |
-| فایروال بسته‌ست | `ufw allow` خودکار |
-| Xray با کلید SSL مشکل داره | `chmod` و `chgrp` خودکار |
-| Service config مشکل | systemd drop-in خودکار |
-| توکن نامعتبر | درخواست توکن جدید |
-| سایت Netlify duplicate | اسم رندوم جدید |
-
-<br>
-
-### 🧪 تست End-to-End خودکار
-
-بعد از deploy، اسکریپت **خودش proxy رو تست می‌کنه** با یه xray client موقت:
-
-```
-✔ VLESS+XHTTP WORKS END-TO-END
-  HTTP 204 in 0.475s — proxy is functional
-
-  Ping (min/avg/max): 395/424/480 ms (through VLESS)
-  CDN Ping: 91 ms (direct to relay)
-  Quality: Good
-```
-
-پس **قبل از این‌که توی کلاینت تست کنی**، می‌دونی proxy کار می‌کنه.
-
-<br>
-
-### 💾 Screen خودکار
-
-اسکریپت اول می‌پرسه آیا توی **screen** اجراش کنه. این طوری:
-- ✅ اگه SSH قطع شد، نصب ادامه پیدا می‌کنه
-- ✅ با `screen -r xhttp` می‌تونی برگردی
-- ✅ کاراکترهای فارسی درست نمایش داده می‌شن (UTF-8 enabled)
-
-<br>
-
-### 🌐 پشتیبانی هر دو پلتفرم
-
-یه اسکریپت، هر دو CDN. تنها کاری که می‌کنی، انتخاب 1 یا 2 توی شروع.
-
-<br>
-
----
-
-## 🐛 عیب‌یابی
-
-<details>
-<summary><b>❌ Xray با خطای "permission denied" روی privkey.pem</b></summary>
+✅ 复制 `vless://...` 链接。
 
 <br/>
 
-این مشکل رو اسکریپت **خودکار حل می‌کنه** (با systemd drop-in که xray رو به root تغییر میده).
+---
 
-اگه به طور دستی هم می‌خوای fix کنی:
-```bash
-chmod 640 /etc/ssl/xhttp/YOUR_DOMAIN/privkey.pem
-chgrp nobody /etc/ssl/xhttp/YOUR_DOMAIN/privkey.pem
+## 📱 使用配置
+
+| 平台 | 应用 | 使用方法 |
+|----------|-----|-----|
+| 🪟 Windows | [v2rayN](https://github.com/2dust/v2rayN/releases) | 服务器 → 从剪贴板导入批量 URL |
+| 🤖 Android | [v2rayNG](https://play.google.com/store/apps/details?id=com.v2ray.ang) | + → 从剪贴板导入配置 |
+| 🍎 iOS | Streisand（App Store）| 自动从剪贴板检测 |
+| 🐧 Linux | [Nekoray](https://github.com/MatsuriDayo/nekoray/releases) | 程序 → 从剪贴板添加配置 |
+| 🌐 全平台 | [Hiddify](https://hiddify.com) | 添加 → 从剪贴板添加 |
+
+<br/>
+
+---
+
+## 🛠️ 脚本特性
+
+### 🤖 智能自动修复
+
+| 问题 | 自动修复 |
+|-------|----------|
+| 端口 80 被占用 | 终止占用进程 |
+| 防火墙阻止 | 自动执行 `ufw allow` |
+| Xray + SSL 密钥权限 | 自动执行 `chmod` + `chgrp` |
+| systemd 服务问题 | drop-in 覆盖 |
+| Token 无效 | 重新提示输入新 Token |
+| Netlify 名称冲突 | 自动生成新随机名称 |
+
+### 🧪 端到端测试
+
+部署后，脚本使用临时 xray 客户端测试代理：
+
+```
+✔ VLESS+XHTTP 端到端工作正常
+  HTTP 204 in 0.475s — 代理功能正常
+  延迟（最小/平均/最大）: 395/424/480 ms（通过 VLESS）
+  质量: 良好
 ```
 
+这样**在你打开客户端之前**，你就知道代理是否可用。
+
+<br/>
+
+---
+
+## 🐛 故障排除
+
+<details>
+<summary><b>❌ Xray "权限不足" (privkey.pem)</b></summary>
+
+<br/>
+
+脚本通过 systemd drop-in **自动修复**此问题。手动修复：
+```bash
+chmod 640 /etc/ssl/xhttp/你的域名/privkey.pem
+chgrp nobody /etc/ssl/xhttp/你的域名/privkey.pem
+```
 </details>
 
 <details>
-<summary><b>❌ HTTP 500 از Netlify (Misconfigured)</b></summary>
+<summary><b>❌ Netlify 返回 HTTP 500（配置错误）</b></summary>
 
 <br/>
 
-یعنی env var `TARGET_DOMAIN` ست نشده. اسکریپت خودکار retry می‌کنه ولی اگه باز هم نشد:
-
+未设置 `TARGET_DOMAIN` 环境变量。自动重试通常会修复。手动：
 ```bash
 cd /root/deploy/netlify
-netlify env:set TARGET_DOMAIN "https://YOUR_DOMAIN:443" \
-  --scope functions --context production --site SITE_ID
+netlify env:set TARGET_DOMAIN "https://你的域名:443" \
+  --scope functions --context production --site 站点_ID
 netlify deploy --prod
 ```
-
 </details>
 
 <details>
-<summary><b>❌ HTTP 404 از relay</b></summary>
+<summary><b>❌ 转发返回 HTTP 404</b></summary>
 
 <br/>
 
-این **طبیعیه** برای request غیر-VLESS! وقتی با curl تست می‌کنی، 404 می‌گیری چون curl یه VLESS handshake نمی‌فرسته. کلاینت‌های واقعی (v2rayN، Nekoray، ...) درست کار می‌کنن.
-
+对于非 VLESS 请求是**正常现象**。`curl` 返回 404，因为它不发送 VLESS 握手。真实客户端（v2rayN、Nekoray……）可以正常工作。
 </details>
 
 <details>
-<summary><b>📝 لاگ کامل</b></summary>
+<summary><b>📝 完整日志</b></summary>
 
 <br/>
 
-همه‌ی خروجی نصب توی این فایل ذخیره می‌شه:
 ```bash
 tail -f /tmp/xhttp-install.log
 ```
-
 </details>
 
-<br>
+<br/>
 
 ---
 
-## 🛡️ هشدار اخلاقی
+## 🛡️ 道德与法律
 
 > [!WARNING]
-> این پروژه فقط برای **دور زدن محدودیت‌های ناعادلانه** و **حفظ حریم خصوصی** ساخته شده.
+> 此项目的唯一目的是 **绕过不公正的限制** 和 **保护隐私**。
 > 
-> ❌ از این برای فعالیت‌های مخرب، حمله، یا نقض حریم خصوصی دیگران استفاده **نکن**.
+> ❌ 请**不要**将其用于恶意活动、攻击或侵犯他人隐私。
 > 
-> ❌ از دامنه‌ها/توکن‌های شخص ثالث **بدون اجازه** استفاده **نکن**.
+> ❌ 请**不要**在**未获得许可**的情况下使用他人的域名/Token。
 > 
-> ✅ فقط روی سرور و CDN account خودت اجرا کن.
+> ✅ 仅在 **你自己的** 服务器和 CDN 账户上使用。
 
-<br>
+<br/>
 
 ---
 
-## 📜 مجوز و کپی‌رایت
+## 📜 许可证与版权
 
-این پروژه تحت **[GNU GPL-3.0](LICENSE)** منتشر شده.
+本项目采用 **[GNU GPL-3.0](LICENSE)** 许可证。
 
-**Copyright © 2025 [@avaco_cloud](https://t.me/avaco_cloud)**
+**版权所有 © 2025 [@avaco_cloud](https://t.me/avaco_cloud)**
 
 > [!IMPORTANT]
-> ✅ استفاده شخصی و تجاری **آزاده**
-> ✅ تغییر و fork **آزاده**
+> ✅ **允许**个人和商业使用
+> ✅ **允许**修改和分叉
 > 
-> ❗ ولی **هر کپی، fork یا توزیع مجدد** باید موارد زیر رو نگه داره:
-> - 📌 نوتیس کپی‌رایت اصلی (`Copyright © 2025 avaco_cloud`)
-> - 📌 لینک به ریپو اصلی: https://github.com/ZhengYuHangOvO/XHTTP-Installer
-> - 📌 اشاره به [@avaco_cloud](https://t.me/avaco_cloud) به‌عنوان نویسنده اصلی
-> - 📌 فایل `LICENSE` بدون تغییر
+> ❗ 但是，**任何复制、分叉或重新分发** 都必须保留：
+> - 📌 原始版权声明（`Copyright © 2025 avaco_cloud`）
+> - 📌 指向原始仓库的链接：https://github.com/ZhengYuHangOvO/XHTTP-Installer
+> - 📌 对 [@avaco_cloud](https://t.me/avaco_cloud) 作为原始作者的署名
+> - 📌 `LICENSE` 文件不得更改
 > 
-> ❌ حذف یا تغییر این موارد **نقض کپی‌رایت** محسوب میشه و باعث **DMCA Takedown** میشه.
+> ❌ 删除或修改上述内容属于 **侵犯版权**，将导致 **DMCA 删除通知**。
 
-اگه دیدی کسی کد این پروژه رو **بدون رعایت لایسنس** کپی کرده، با [@avaco_cloud](https://t.me/avaco_cloud) تماس بگیر.
+如果你发现有人使用此代码 **未遵守许可证规定**，请联系 [@avaco_cloud](https://t.me/avaco_cloud)。
 
-<br>
+<br/>
 
 ---
 
 <div align="center">
 
-## 💖 حمایت مالی
+## 💖 支持
 
-اگه این پروژه بهت کمک کرد و دوست داری حمایت کنی، می‌تونی با ارز دیجیتال دونیت کنی:
+如果这个项目帮助了你，可以考虑加密货币捐赠：
 
 <a href="https://nowpayments.io/donation?api_key=53edc3b4-8a65-451a-9ca9-67c30519c7a5" target="_blank" rel="noreferrer noopener">
-  <img src="https://nowpayments.io/images/embeds/donation-button-white.svg" alt="Cryptocurrency & Bitcoin donation button by NOWPayments" />
+  <img src="https://nowpayments.io/images/embeds/donation-button-white.svg" alt="NOWPayments 加密货币捐赠按钮" />
 </a>
 
 <br/><br/>
 
 ---
 
-## 🙏 تشکر و قدردانی
+## 🙏 致谢
 
-از این عزیزان بابت الهام و کمک‌هاشون سپاسگزارم:
+特别感谢以下出色的开发者给予的灵感和贡献：
 
 <table>
 <tr>
@@ -639,8 +559,16 @@ tail -f /tmp/xhttp-install.log
 
 ---
 
-<br>
+## 💬 有问题？
 
-Made with ❤️ by [@avaco_cloud](https://t.me/avaco_cloud)
+📢 **Telegram：** [@avaco_cloud](https://t.me/avaco_cloud)
+
+<br/>
+
+**如果你觉得这个项目有用，给它一个 ⭐ 并分享给更多人！**
+
+<br/>
+
+由 [@avaco_cloud](https://t.me/avaco_cloud) 用 ❤️ 制作
 
 </div>
