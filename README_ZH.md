@@ -304,6 +304,14 @@ bash <(curl -fsSL https://raw.githubusercontent.com/ZhengYuHangOvO/XHTTP-Install
 > [!TIP]
 > 这会安装 `git`，克隆仓库到 `/root/XHTTP-Installer`，然后自动运行 `Deploy-Ubuntu.sh`。
 
+**中文版脚本：**
+> 如果你更喜欢中文界面，仓库中同时提供了 `ZH_Deploy-Ubuntu.sh`（全中文版），
+> 所有提示、输出和交互信息均为中文。将上面命令中的 `install.sh` 替换为 `install-zh.sh` 即可使用，
+> 或者手动运行：
+> ```bash
+> bash ZH_Deploy-Ubuntu.sh
+> ```
+
 <details>
 <summary><b>备用方法</b></summary>
 
@@ -314,6 +322,11 @@ bash <(curl -fsSL https://raw.githubusercontent.com/ZhengYuHangOvO/XHTTP-Install
 git clone https://github.com/ZhengYuHangOvO/XHTTP-Installer.git /root/XHTTP-Installer
 cd /root/XHTTP-Installer
 sudo bash Deploy-Ubuntu.sh
+```
+
+**中文版手动运行：**
+```bash
+sudo bash ZH_Deploy-Ubuntu.sh
 ```
 
 **离线 zip：**
