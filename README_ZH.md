@@ -33,7 +33,7 @@
 </div>
 
 ```bash
-bash <(curl -fsSL https://raw.githubusercontent.com/ZhengYuHangOvO/XHTTP-Installer/main/install.sh)
+bash <(curl -fsSL https://raw.githubusercontent.com/zsigoio/XHTTP-Installer/main/install.sh)
 ```
 
 <div align="center">
@@ -298,7 +298,7 @@ https://app.netlify.com/user/applications#personal-access-tokens
 SSH 连接到你的服务器并运行：
 
 ```bash
-bash <(curl -fsSL https://raw.githubusercontent.com/ZhengYuHangOvO/XHTTP-Installer/main/install.sh)
+bash <(curl -fsSL https://raw.githubusercontent.com/zsigoio/XHTTP-Installer/main/install.sh)
 ```
 
 > [!TIP]
@@ -319,7 +319,7 @@ bash <(curl -fsSL https://raw.githubusercontent.com/ZhengYuHangOvO/XHTTP-Install
 
 **手动 git 克隆：**
 ```bash
-git clone https://github.com/ZhengYuHangOvO/XHTTP-Installer.git /root/XHTTP-Installer
+git clone https://github.com/zsigoio/XHTTP-Installer.git /root/XHTTP-Installer
 cd /root/XHTTP-Installer
 sudo bash Deploy-Ubuntu.sh
 ```
@@ -521,7 +521,7 @@ tail -f /tmp/xhttp-install.log
 > 
 > ❗ 但是，**任何复制、分叉或重新分发** 都必须保留：
 > - 📌 原始版权声明（`Copyright © 2025 avaco_cloud`）
-> - 📌 指向原始仓库的链接：https://github.com/ZhengYuHangOvO/XHTTP-Installer
+> - 📌 指向原始仓库的链接：https://github.com/zsigoio/XHTTP-Installer
 > - 📌 对 [@avaco_cloud](https://t.me/avaco_cloud) 作为原始作者的署名
 > - 📌 `LICENSE` 文件不得更改
 > 
