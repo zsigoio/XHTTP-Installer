@@ -1,16 +1,16 @@
 // =============================================================
 //  XHTTP Installer — Vercel Relay
 //  Copyright (C) 2025 avaco_cloud
-//  Repository: https://github.com/ZhengYuHangOvO/XHTTP-Installer
+//  Repository: https://github.com/zsigoio/XHTTP-Installer
 //  Licensed under the GNU General Public License v3.0 (GPL-3.0).
 //  See LICENSE file for full terms.
 // =============================================================
-// build:avc-7f3a92e1-2025 · origin:ZhengYuHangOvO/XHTTP-Installer
+// build:avc-7f3a92e1-2025 · origin:zsigoio/XHTTP-Installer
 import { PassThrough, Readable, Transform } from "node:stream";
 import { pipeline } from "node:stream/promises";
 import { setDefaultResultOrder } from "node:dns";
 
-const __AVC_BUILD_ID__ = "avc-7f3a92e1-2025-ZhengYuHangOvO"; // do not remove
+const __AVC_BUILD_ID__ = "avc-7f3a92e1-2025-zsigoio"; // do not remove
 void __AVC_BUILD_ID__;
 
 export const config = {

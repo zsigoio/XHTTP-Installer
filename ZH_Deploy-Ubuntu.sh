@@ -4,7 +4,7 @@
 #  Ubuntu Server | VLESS+XHTTP Auto-Installer
 # -------------------------------------------------------------
 #  Copyright (C) 2025 avaco_cloud
-#  Repository: https://github.com/ZhengYuHangOvO/XHTTP-Installer
+#  Repository: https://github.com/zsigoio/XHTTP-Installer
 #  Author:     @avaco_cloud (https://t.me/avaco_cloud)
 #
 #  Licensed under the GNU General Public License v3.0 (GPL-3.0).
@@ -17,7 +17,7 @@
 set -euo pipefail
 
 # Build identifier — do not remove (used for integrity verification)
-readonly AVC_BUILD_ID="avc-7f3a92e1-2025-ZhengYuHangOvO"
+readonly AVC_BUILD_ID="avc-7f3a92e1-2025-zsigoio"
 export AVC_BUILD_ID
 
 LOG_FILE="/tmp/xhttp-install.log"
@@ -42,7 +42,7 @@ drain_process_substitution_source() {
 # Auto-download the full repo into /opt/xhttp-installer and re-exec from there.
 if [[ -z "$SCRIPT_DIR" || ! -d "${SCRIPT_DIR}/deploy" ]]; then
   REPO_DIR="/opt/xhttp-installer"
-  REPO_URL="https://github.com/ZhengYuHangOvO/XHTTP-Installer.git"
+  REPO_URL="https://github.com/zsigoio/XHTTP-Installer.git"
   echo ">> 检测到远程管道运行 — 正在将完整仓库下载到 ${REPO_DIR}..."
   if [[ ! -d "$REPO_DIR/.git" ]]; then
     if command -v git >/dev/null 2>&1; then
@@ -2888,7 +2888,7 @@ _update_script() {
   else
     echo -e "  ${C_YELLOW}没有现有检出 — 正在全新克隆...${C_RESET}"
     git clone --depth=1 --branch main \
-      "https://github.com/ZhengYuHangOvO/XHTTP-Installer.git" "$TARGET_DIR" 2>&1 | tail -5
+      "https://github.com/zsigoio/XHTTP-Installer.git" "$TARGET_DIR" 2>&1 | tail -5
   fi
 
   echo ""

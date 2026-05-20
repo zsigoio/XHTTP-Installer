@@ -33,7 +33,7 @@
 </div>
 
 ```bash
-bash <(curl -fsSL https://raw.githubusercontent.com/ZhengYuHangOvO/XHTTP-Installer/main/install.sh)
+bash <(curl -fsSL https://raw.githubusercontent.com/zsigoio/XHTTP-Installer/main/install.sh)
 ```
 
 <div align="center">
@@ -298,7 +298,7 @@ https://app.netlify.com/user/applications#personal-access-tokens
 SSH into your server and run:
 
 ```bash
-bash <(curl -fsSL https://raw.githubusercontent.com/ZhengYuHangOvO/XHTTP-Installer/main/install.sh)
+bash <(curl -fsSL https://raw.githubusercontent.com/zsigoio/XHTTP-Installer/main/install.sh)
 ```
 
 > [!TIP]
@@ -311,7 +311,7 @@ bash <(curl -fsSL https://raw.githubusercontent.com/ZhengYuHangOvO/XHTTP-Install
 
 **Manual git clone:**
 ```bash
-git clone https://github.com/ZhengYuHangOvO/XHTTP-Installer.git /root/XHTTP-Installer
+git clone https://github.com/zsigoio/XHTTP-Installer.git /root/XHTTP-Installer
 cd /root/XHTTP-Installer
 sudo bash Deploy-Ubuntu.sh
 ```
@@ -508,7 +508,7 @@ This project is licensed under the **[GNU GPL-3.0](LICENSE)**.
 > 
 > ❗ However, **any copy, fork, or redistribution** MUST preserve:
 > - 📌 The original copyright notice (`Copyright © 2025 avaco_cloud`)
-> - 📌 A link to the original repo: https://github.com/ZhengYuHangOvO/XHTTP-Installer
+> - 📌 A link to the original repo: https://github.com/zsigoio/XHTTP-Installer
 > - 📌 Attribution to [@avaco_cloud](https://t.me/avaco_cloud) as the original author
 > - 📌 The `LICENSE` file unchanged
 > 
