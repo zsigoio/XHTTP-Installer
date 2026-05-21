@@ -62,7 +62,7 @@ print_banner() {
 
 confirm() {
   local prompt="$1"
-  read -rp "$(echo -e "  ${C_YELLOW}${prompt} [Y/n]${C_RESET}: ")" yn
+  read -rp "$(echo -e "  ${C_YELLOW}${prompt}${C_RESET} ${C_GRAY}[Y/n]${C_RESET}: ")" yn
   case "${yn,,}" in n|no) return 1;; *) return 0;; esac
 }
 
@@ -96,9 +96,9 @@ phase1_preflight() {
   info "更新软件包列表..."
   apt-get update -qq 2>/dev/null || true
 
-  info "安装最小依赖 (curl, git, openssl, ca-certificates)..."
+  info "安装最小依赖 (curl, git, openssl, ca-certificates, cron)..."
   DEBIAN_FRONTEND=noninteractive apt-get install -y -qq \
-    curl wget git openssl ca-certificates gnupg dnsutils unzip jq lsof 2>/dev/null || true
+    curl wget git openssl ca-certificates gnupg dnsutils unzip jq lsof cron 2>/dev/null || true
   ok "基础依赖安装完成"
 
   local total_mem_mb avail_mem_mb
@@ -136,11 +136,15 @@ phase2_install_light() {
     ok "acme.sh 已安装"
   else
     info "安装 acme.sh..."
-    curl -fsSL https://get.acme.sh | sh -s email=admin@example.com 2>&1 | grep -E "(install|Installed|OK|error|Error|success)" || true
+    curl -fsSL https://get.acme.sh | sh -s email=admin@example.com 2>&1 | grep -E "(install|Installed|OK|error|Error|success|crontab)" || true
+    if [[ ! -f "$HOME/.acme.sh/acme.sh" ]]; then
+      info "尝试强制安装 acme.sh（无 crontab 模式）..."
+      curl -fsSL https://get.acme.sh | sh -s email=admin@example.com --force 2>&1 | grep -E "(install|Installed|OK|error|Error|success)" || true
+    fi
     if [[ ! -f "$HOME/.acme.sh/acme.sh" ]]; then
       curl -fsSL https://raw.githubusercontent.com/acmesh-official/acme.sh/master/acme.sh \
         -o /tmp/acme-install.sh 2>/dev/null && \
-        bash /tmp/acme-install.sh --install-online 2>&1 | grep -E "(install|Installed|OK)" || true
+        bash /tmp/acme-install.sh --install-online --force 2>&1 | grep -E "(install|Installed|OK)" || true
       rm -f /tmp/acme-install.sh
     fi
   fi
