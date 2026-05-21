@@ -320,6 +320,18 @@ bash <(curl -fsSL https://raw.githubusercontent.com/zsigoio/XHTTP-Installer/main
 > bash Deploy-NAT.sh
 > ```
 
+**手动 Netlify CDN 加速（给小机用）：**
+> 小机跑完 `Deploy-NAT.sh` 后，在本地浏览器操作即可加上 Netlify CDN 转发：
+>
+> **①** 将仓库中的 `manual-netlify/` 文件夹拖拽到 [app.netlify.com](https://app.netlify.com) 上传
+> **②** 在 Site settings → Environment variables 添加：
+> ```
+> TARGET_DOMAIN = https://你的域名:443
+> ```
+> **③** 在 Deploys 页面点 **Trigger deploy → Deploy site**
+>
+> 完成！客户端连接 Netlify 域名即可，服务器 IP 不再暴露。
+
 <details>
 <summary><b>备用方法</b></summary>
 
