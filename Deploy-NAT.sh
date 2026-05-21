@@ -96,9 +96,9 @@ phase1_preflight() {
   info "更新软件包列表..."
   apt-get update -qq 2>/dev/null || true
 
-  info "安装最小依赖 (curl, git, openssl, ca-certificates, cron)..."
+  info "安装最小依赖 (curl, git, openssl, socat, cron)..."
   DEBIAN_FRONTEND=noninteractive apt-get install -y -qq \
-    curl wget git openssl ca-certificates gnupg dnsutils unzip jq lsof cron 2>/dev/null || true
+    curl wget git openssl ca-certificates gnupg dnsutils unzip jq lsof cron socat 2>/dev/null || true
   ok "基础依赖安装完成"
 
   local total_mem_mb avail_mem_mb
