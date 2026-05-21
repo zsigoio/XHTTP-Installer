@@ -168,18 +168,43 @@ CFG_INBOUND_PORT=""
 CFG_RELAY_PATH=""
 CFG_EXTERNAL_IP=""
 CFG_EXTERNAL_PORT=""
+CFG_SSL_MODE="standalone"
+CFG_CF_TOKEN=""
+CFG_CF_EMAIL=""
 
 phase3_collect_input() {
   step "阶段 3 — 配置信息收集"
 
   echo ""
   echo -e "  ${C_MAGENTA}📌 NAT 小机使用说明：${C_RESET}"
-  echo -e "  ${C_GRAY}如果服务器在 NAT 内网（无公网 IP），你需要有公网端口转发。${C_RESET}"
+  echo -e "  ${C_GRAY}如果公网无法开放端口 80，可以使用 Cloudflare DNS 验证来申请 SSL。${C_RESET}"
   echo -e "  ${C_GRAY}脚本会尝试检测公网 IP，你也可以手动填写。${C_RESET}"
   echo ""
 
   CFG_DOMAIN=$(read_required "域名（例如 ns.example.com）")
   CFG_EMAIL=$(read_required "邮箱（用于 Let's Encrypt 通知，必须真实）")
+
+  echo -e "  ${C_CYAN}[ SSL 验证方式 ]${C_RESET}"
+  echo -e "  ${C_GRAY}  1) Standalone（需要公网可访问的端口 80）${C_RESET}"
+  echo -e "  ${C_GRAY}  2) Cloudflare DNS API（无需开放端口，域名需在 Cloudflare 托管）${C_RESET}"
+  while true; do
+    read -rp "$(echo -e "  ${C_WHITE}选择验证方式 [1/2]${C_RESET}: ")" ssl_choice
+    case "$ssl_choice" in
+      1) CFG_SSL_MODE="standalone"; break ;;
+      2) CFG_SSL_MODE="dns_cf"; break ;;
+      *) fail "输入 1 或 2" ;;
+    esac
+  done
+
+  if [[ "$CFG_SSL_MODE" == "dns_cf" ]]; then
+    echo ""
+    echo -e "  ${C_CYAN}[ Cloudflare API ]${C_RESET}"
+    echo -e "  ${C_GRAY}  获取 API Token: Cloudflare 仪表盘 → 我的资料 → API 令牌 → 创建令牌${C_RESET}"
+    echo -e "  ${C_GRAY}  （使用「编辑区域 DNS」模板，权限选 DNS:编辑，资源选你的域名）${C_RESET}"
+    CFG_CF_TOKEN=$(read_required "Cloudflare API Token")
+    CFG_CF_EMAIL=$(read_default "Cloudflare 账户邮箱" "")
+  fi
+
   CFG_INBOUND_PORT=$(read_default "Xray 入站端口" "443")
   CFG_RELAY_PATH=$(read_default "转发路径 (例如 /api)" "/api")
   [[ "${CFG_RELAY_PATH:0:1}" != "/" ]] && CFG_RELAY_PATH="/$CFG_RELAY_PATH"
@@ -202,6 +227,8 @@ phase3_collect_input() {
   echo -e "  ${C_CYAN}────────────── 配置摘要 ──────────────${C_RESET}"
   echo -e "  ${C_WHITE}域名          :${C_RESET} $CFG_DOMAIN"
   echo -e "  ${C_WHITE}邮箱          :${C_RESET} $CFG_EMAIL"
+  echo -e "  ${C_WHITE}SSL 验证方式  :${C_RESET} $CFG_SSL_MODE"
+  [[ "$CFG_SSL_MODE" == "dns_cf" ]] && echo -e "  ${C_WHITE}CF Token      :${C_RESET} ${CFG_CF_TOKEN:0:8}****"
   echo -e "  ${C_WHITE}入站端口      :${C_RESET} $CFG_INBOUND_PORT"
   echo -e "  ${C_WHITE}转发路径      :${C_RESET} $CFG_RELAY_PATH"
   echo -e "  ${C_WHITE}公网 IP       :${C_RESET} $CFG_EXTERNAL_IP"
@@ -233,29 +260,39 @@ phase4a_ssl() {
     warn "DNS 解析失败（刚配置 DNS 请等待 1-2 分钟）"
   fi
 
-  # ── 释放端口 80 ──
-  if ss -tlnp 2>/dev/null | grep -q ':80 '; then
-    warn "端口 80 被占用，尝试释放..."
-    for svc in apache2 httpd nginx caddy; do
-      systemctl stop "$svc" 2>/dev/null || true
-    done
-    local p80
-    p80=$(ss -tlnp 2>/dev/null | grep ':80 ' | grep -oP 'pid=\K[0-9]+' | head -1)
-    [[ -n "$p80" ]] && kill "$p80" 2>/dev/null || true
-    sleep 2
-  fi
-
   "$ACME_CMD" --register-account -m "$CFG_EMAIL" --server letsencrypt 2>&1 | \
     grep -iE "register|already|account" | head -3 || true
 
-  local issue_rc=0 acme_out
-  info "通过 standalone 模式申请证书..."
-  acme_out=$("$ACME_CMD" --issue -d "$CFG_DOMAIN" --standalone \
-    --keylength ec-256 --listen-v4 --server letsencrypt 2>&1) || issue_rc=$?
-  echo "$acme_out" | tail -10 | while IFS= read -r l; do echo -e "    ${C_GRAY}${l}${C_RESET}"; done
+  local issue_rc=0 acme_out acme_cert_path="$HOME/.acme.sh/${CFG_DOMAIN}_ecc/${CFG_DOMAIN}.cer"
 
-  # ── 处理"跳过续期"的情况 ──
-  local acme_cert_path="$HOME/.acme.sh/${CFG_DOMAIN}_ecc/${CFG_DOMAIN}.cer"
+  if [[ "$CFG_SSL_MODE" == "dns_cf" ]]; then
+    info "通过 Cloudflare DNS API 申请证书（无需端口 80）..."
+    local cf_env="CF_Token=${CFG_CF_TOKEN}"
+    [[ -n "$CFG_CF_EMAIL" ]] && cf_env="${cf_env} CF_Email=${CFG_CF_EMAIL}"
+    acme_out=$(export CF_Token="${CFG_CF_TOKEN}" CF_Email="${CFG_CF_EMAIL}" && \
+      "$ACME_CMD" --issue -d "$CFG_DOMAIN" --dns dns_cf \
+        --keylength ec-256 --server letsencrypt 2>&1) || issue_rc=$?
+    echo "$acme_out" | tail -10 | while IFS= read -r l; do echo -e "    ${C_GRAY}${l}${C_RESET}"; done
+  else
+    # ── 释放端口 80 ──
+    if ss -tlnp 2>/dev/null | grep -q ':80 '; then
+      warn "端口 80 被占用，尝试释放..."
+      for svc in apache2 httpd nginx caddy; do
+        systemctl stop "$svc" 2>/dev/null || true
+      done
+      local p80
+      p80=$(ss -tlnp 2>/dev/null | grep ':80 ' | grep -oP 'pid=\K[0-9]+' | head -1)
+      [[ -n "$p80" ]] && kill "$p80" 2>/dev/null || true
+      sleep 2
+    fi
+
+    info "通过 standalone 模式申请证书..."
+    acme_out=$("$ACME_CMD" --issue -d "$CFG_DOMAIN" --standalone \
+      --keylength ec-256 --listen-v4 --server letsencrypt 2>&1) || issue_rc=$?
+    echo "$acme_out" | tail -10 | while IFS= read -r l; do echo -e "    ${C_GRAY}${l}${C_RESET}"; done
+  fi
+
+  # ── 处理"跳过续期" ──
   if [[ $issue_rc -ne 0 ]] && echo "$acme_out" | grep -qiE "Skipping|Next renewal"; then
     if [[ -f "$acme_cert_path" ]]; then
       info "现有证书仍然有效，直接使用"
@@ -263,8 +300,14 @@ phase4a_ssl() {
     else
       warn "强制重新签发..."
       sleep 3
-      acme_out=$("$ACME_CMD" --issue -d "$CFG_DOMAIN" --standalone \
-        --keylength ec-256 --listen-v4 --server letsencrypt --force 2>&1) || issue_rc=$?
+      if [[ "$CFG_SSL_MODE" == "dns_cf" ]]; then
+        acme_out=$(export CF_Token="${CFG_CF_TOKEN}" CF_Email="${CFG_CF_EMAIL}" && \
+          "$ACME_CMD" --issue -d "$CFG_DOMAIN" --dns dns_cf \
+            --keylength ec-256 --server letsencrypt --force 2>&1) || issue_rc=$?
+      else
+        acme_out=$("$ACME_CMD" --issue -d "$CFG_DOMAIN" --standalone \
+          --keylength ec-256 --listen-v4 --server letsencrypt --force 2>&1) || issue_rc=$?
+      fi
       echo "$acme_out" | tail -10 | while IFS= read -r l; do echo -e "    ${C_GRAY}${l}${C_RESET}"; done
     fi
   fi
@@ -275,17 +318,29 @@ phase4a_ssl() {
     "$ACME_CMD" --register-account -m "$CFG_EMAIL" --server letsencrypt 2>&1 | head -3 || true
     sleep 2
     issue_rc=0
-    acme_out=$("$ACME_CMD" --issue -d "$CFG_DOMAIN" --standalone \
-      --keylength ec-256 --listen-v4 --server letsencrypt --force 2>&1) || issue_rc=$?
+    if [[ "$CFG_SSL_MODE" == "dns_cf" ]]; then
+      acme_out=$(export CF_Token="${CFG_CF_TOKEN}" CF_Email="${CFG_CF_EMAIL}" && \
+        "$ACME_CMD" --issue -d "$CFG_DOMAIN" --dns dns_cf \
+          --keylength ec-256 --server letsencrypt --force 2>&1) || issue_rc=$?
+    else
+      acme_out=$("$ACME_CMD" --issue -d "$CFG_DOMAIN" --standalone \
+        --keylength ec-256 --listen-v4 --server letsencrypt --force 2>&1) || issue_rc=$?
+    fi
     echo "$acme_out" | tail -10 | while IFS= read -r l; do echo -e "    ${C_GRAY}${l}${C_RESET}"; done
   fi
 
   if [[ $issue_rc -ne 0 ]] || [[ ! -f "$acme_cert_path" ]]; then
     fail "SSL 证书申请失败"
-    info "请检查:"
-    info "  • DNS A 记录必须指向此服务器的公网 IP"
-    info "  • 端口 80 必须可从公网访问"
-    info "  • 如果使用 Cloudflare，确保是 DNS-only（灰色云）"
+    if [[ "$CFG_SSL_MODE" == "dns_cf" ]]; then
+      info "请检查:"
+      info "  • Cloudflare API Token 权限是否正确（需要 DNS:编辑）"
+      info "  • 域名是否在 Cloudflare 上托管"
+      info "  • API Token 是否过期"
+    else
+      info "请检查:"
+      info "  • DNS A 记录必须指向此服务器的公网 IP"
+      info "  • 端口 80 必须可从公网访问"
+    fi
     return 1
   fi
   ok "SSL 证书申请成功"
