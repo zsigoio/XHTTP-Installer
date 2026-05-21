@@ -262,6 +262,7 @@ flowchart TD
 - **访问权限**：root 或 sudo
 - **端口**：80（用于 SSL）和 443（用于转发）
 - **最低配置**：1 vCPU + 1 GB 内存
+- **💡 低配小机**：内存低至 128MB 的 LXD 容器或 NAT 机器，请使用 `Deploy-NAT.sh`（精简版，无需 Node.js）
 
 > [!IMPORTANT]
 > 确保端口 80 和 443 未被占用。如果 nginx/apache 正在使用它们，请先停止这些服务。
@@ -312,6 +313,13 @@ bash <(curl -fsSL https://raw.githubusercontent.com/zsigoio/XHTTP-Installer/main
 > bash ZH_Deploy-Ubuntu.sh
 > ```
 
+**低配 / NAT 小机版：**
+> 如果你的服务器内存很小（如 128MB LXD 容器）或处于 NAT 内网环境，
+> 请使用 `Deploy-NAT.sh`（精简版，无需 Node.js / npm / CDN CLI）：
+> ```bash
+> bash Deploy-NAT.sh
+> ```
+
 <details>
 <summary><b>备用方法</b></summary>
 
@@ -327,6 +335,11 @@ sudo bash Deploy-Ubuntu.sh
 **中文版手动运行：**
 ```bash
 sudo bash ZH_Deploy-Ubuntu.sh
+```
+
+**低配/NAT 小机版手动运行：**
+```bash
+sudo bash Deploy-NAT.sh
 ```
 
 **离线 zip：**
