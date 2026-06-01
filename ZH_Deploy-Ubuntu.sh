@@ -2111,8 +2111,7 @@ phase5_healthcheck() {
       "tlsSettings": {
         "serverName": "${VERCEL_HOST}",
         "alpn": ["h2", "http/1.1"],
-        "allowInsecure": false
-      },
+              },
       "xhttpSettings": {
         "path": "${CFG_PUBLIC_PATH}",
         "host": "${VERCEL_HOST}",
@@ -2603,7 +2602,7 @@ phase6_summary() {
   fi
   local ENCODED_EXTRA
   ENCODED_EXTRA=$(python3 -c "import urllib.parse,sys; print(urllib.parse.quote(sys.argv[1], safe=''))" "$EXTRA_JSON" 2>/dev/null || echo "$EXTRA_JSON")
-  local CLIENT_LINK="vless://${INBOUND_UUID:-UUID}@${VERCEL_HOST}:443?encryption=none&security=tls&sni=${VERCEL_HOST}&fp=chrome&alpn=h2%2Chttp%2F1.1&insecure=0&allowInsecure=0&type=xhttp&host=${VERCEL_HOST}&path=${ENCODED_PATH}&mode=auto&extra=${ENCODED_EXTRA}#${LINK_TAG}"
+  local CLIENT_LINK="vless://${INBOUND_UUID:-UUID}@${VERCEL_HOST}:443?encryption=none&security=tls&sni=${VERCEL_HOST}&fp=chrome&alpn=h2%2Chttp%2F1.1&insecure=0&type=xhttp&host=${VERCEL_HOST}&path=${ENCODED_PATH}&mode=auto&extra=${ENCODED_EXTRA}#${LINK_TAG}"
 
   echo ""
   echo -e "${C_GREEN}"
@@ -2698,7 +2697,7 @@ phase7_install_panel() {
     EXTRA_JSON=$(printf '{"xPaddingBytes":"%s"}' "${XPADDING:-100-1000}")
   fi
   ENCODED_EXTRA=$(python3 -c "import urllib.parse,sys; print(urllib.parse.quote(sys.argv[1], safe=''))" "$EXTRA_JSON" 2>/dev/null || echo "$EXTRA_JSON")
-  CLIENT_LINK="vless://${INBOUND_UUID}@${VERCEL_HOST}:443?encryption=none&security=tls&sni=${VERCEL_HOST}&fp=chrome&alpn=h2%2Chttp%2F1.1&insecure=0&allowInsecure=0&type=xhttp&host=${VERCEL_HOST}&path=${ENCODED_PATH}&mode=auto&extra=${ENCODED_EXTRA}#XHTTP-${CFG_PLATFORM}"
+  CLIENT_LINK="vless://${INBOUND_UUID}@${VERCEL_HOST}:443?encryption=none&security=tls&sni=${VERCEL_HOST}&fp=chrome&alpn=h2%2Chttp%2F1.1&insecure=0&type=xhttp&host=${VERCEL_HOST}&path=${ENCODED_PATH}&mode=auto&extra=${ENCODED_EXTRA}#XHTTP-${CFG_PLATFORM}"
 
   cat > "$STATE_FILE" <<STATE
 # XHTTP Installer — 持久化状态 (请勿手动编辑)
