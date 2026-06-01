@@ -262,7 +262,6 @@ flowchart TD
 - **访问权限**：root 或 sudo
 - **端口**：80（用于 SSL）和 443（用于转发）
 - **最低配置**：1 vCPU + 1 GB 内存
-- **💡 低配小机**：内存低至 128MB 的 LXD 容器或 NAT 机器，请使用 `Deploy-NAT.sh`（精简版，无需 Node.js）
 
 > [!IMPORTANT]
 > 确保端口 80 和 443 未被占用。如果 nginx/apache 正在使用它们，请先停止这些服务。
@@ -313,24 +312,13 @@ bash <(curl -fsSL https://raw.githubusercontent.com/zsigoio/XHTTP-Installer/main
 > bash ZH_Deploy-Ubuntu.sh
 > ```
 
-**低配 / NAT 小机版：**
-> 如果你的服务器内存很小（如 128MB LXD 容器）或处于 NAT 内网环境，
-> 请使用 `Deploy-NAT.sh`（精简版，无需 Node.js / npm / CDN CLI）：
-> ```bash
-> bash Deploy-NAT.sh
+**手动 Netlify CDN 加速：**
+> 你也可以将 `manual-netlify/` 文件夹拖拽到 [app.netlify.com](https://app.netlify.com) 手动部署 CDN。
+> 在 Site settings → Environment variables 添加：
 > ```
-
-**手动 Netlify CDN 加速（给小机用）：**
-> 小机跑完 `Deploy-NAT.sh` 后，在本地浏览器操作即可加上 Netlify CDN 转发：
->
-> **①** 将仓库中的 `manual-netlify/` 文件夹拖拽到 [app.netlify.com](https://app.netlify.com) 上传
-> **②** 在 Site settings → Environment variables 添加：
+> TARGET_DOMAIN = https://你的域名:端口
 > ```
-> TARGET_DOMAIN = https://你的域名:443
-> ```
-> **③** 在 Deploys 页面点 **Trigger deploy → Deploy site**
->
-> 完成！客户端连接 Netlify 域名即可，服务器 IP 不再暴露。
+> 部署完成后客户端连接 Netlify 域名即可，服务器 IP 不再暴露。
 
 <details>
 <summary><b>备用方法</b></summary>
@@ -347,11 +335,6 @@ sudo bash Deploy-Ubuntu.sh
 **中文版手动运行：**
 ```bash
 sudo bash ZH_Deploy-Ubuntu.sh
-```
-
-**低配/NAT 小机版手动运行：**
-```bash
-sudo bash Deploy-NAT.sh
 ```
 
 **离线 zip：**
