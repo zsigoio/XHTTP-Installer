@@ -552,6 +552,12 @@ tail -f /tmp/xhttp-install.log
 <b>@B3hnamR</b>
 </a>
 </td>
+<td align="center">
+<a href="https://github.com/zsigoio">
+<img src="https://github.com/zsigoio.png" width="80" alt="zsigoio" /><br/>
+<b>@zsigoio</b>
+</a>
+</td>
 </tr>
 </table>
 
